@@ -10,21 +10,23 @@
   <% num_2a = []  %>
   <% @posts.each_with_index do |post, index| %>
   <% num_2a.push([post.id, index+1])%>
-  <!-- =====================ここで辞書逆引きする================================= -->
   <% end %>
   
   <!-- 表示部分 -->
   <% @posts.each_with_index do |post, index| %>
-  <%= index+1 %>. 
+  <span id=<%= index+1 %>><%= index+1 %>.</span>
   <%= post.name %>
   <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' } %>  
   <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
   <br>
-  <% if not post.reply_id.nil? and not (num_2a.select{|x, y| x == post.reply_id}).empty?%>
-    <%= ">>#{num_2a.select{|x, y| x == post.reply_id}.first[1]}" %>
-    <%= tag.br %>
-  <% elsif not post.reply_id.nil? %>
-    <%= ">>[deleted post]" %>
+  <% if not post.reply_id.nil? %>
+    <% topic_post_ids = num_2a.select{|x, y| x == post.reply_id} %>
+    <% if not topic_post_ids.empty?%>
+      <%reply_id = num_2a.select{|x, y| x == post.reply_id}.first[1] %>
+      <%= link_to ">>#{reply_id}", { anchor: reply_id } %>
+    <% else %>
+      <%= ">>[deleted post]" %>
+    <% end %>
     <%= tag.br %>
   <% end %>
   <%= post.content %>
