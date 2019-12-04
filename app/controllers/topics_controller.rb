@@ -5,6 +5,7 @@ class TopicsController < ApplicationController
   # GET /topics.json
   def index
     @topics = Topic.all
+    @posts = Post.all
     session[:reply_to] = nil
   end
 

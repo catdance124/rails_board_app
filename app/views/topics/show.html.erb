@@ -17,7 +17,7 @@
     <span id=<%= index+1 %>><%= index+1 %>.</span>
     <%= post.name %>
     (<%= post.created_at %>)
-    <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
+    <%= link_to "[↶]" , posts_reply_path(post.id, post), :method => :post %>
     <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' }, class: "text-danger" %>  
     <br>
     <% if not post.reply_id.nil? %>
