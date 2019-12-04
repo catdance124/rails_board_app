@@ -1,53 +1,58 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Title:</strong>
-  <%= @topic.title %>
+  <h2>Title: <%= @topic.title %></h2>
 </p>
-
-<p>
-  <!-- 全postID <-> Topic内postID 変換用-->
-  <% num_2a = []  %>
-  <% @posts.each_with_index do |post, index| %>
-  <% num_2a.push([post.id, index+1])%>
-  <% end %>
   
-  <!-- 表示部分 -->
-  <% @posts.each_with_index do |post, index| %>
-  <span id=<%= index+1 %>><%= index+1 %>.</span>
-  <%= post.name %>
-  (<%= post.created_at %>)
-  <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
-  <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' } %>  
-  <br>
-  <% if not post.reply_id.nil? %>
-    <% topic_post_ids = num_2a.select{|x, y| x == post.reply_id} %>
-    <% if not topic_post_ids.empty?%>
-      <%reply_id = num_2a.select{|x, y| x == post.reply_id}.first[1] %>
-      <%= link_to ">>#{reply_id}", { anchor: reply_id } %>
-    <% else %>
-      <%= ">>[deleted post]" %>
-    <% end %>
-    <%= tag.br %>
-  <% end %>
-  <%= post.content %>
-  <br><br>
-  <% end %>
-</p>
-
-<h3>書き込み</h3>
-<%= form_for @newpost, :url => posts_path do |f| %>
-  <%= f.hidden_field :topic_id %>
-  <p>返信先  (<%= link_to "返信しない" , posts_reply_path(nil), :method => :post %>)</p>
-  <%= "返信せずに投稿" if @reply_to.nil? %>
-  <%= "#{num_2a.select{|x, y| x == @reply_to}.first[1]}番に返信" if not @reply_to.nil? %>
-  <%= f.hidden_field :reply_id, :value => @reply_to %>
-  <p>名前</p>
-  <p><%= f.text_field :name %></p>
-  <p>本文</p>
-  <p><%= f.text_area :content %></p>
-  <%= f.submit %>
+<!-- 全postID <-> Topic内postID 変換用-->
+<% num_2a = []  %>
+<% @posts.each_with_index do |post, index| %>
+<% num_2a.push([post.id, index+1])%>
 <% end %>
 
+<!-- 表示部分 -->
+<% @posts.each_with_index do |post, index| %>
+  <div class="panel panel-default">
+	<div class="panel-body">
+    <span id=<%= index+1 %>><%= index+1 %>.</span>
+    <%= post.name %>
+    (<%= post.created_at %>)
+    <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
+    <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' }, class: "text-danger" %>  
+    <br>
+    <% if not post.reply_id.nil? %>
+      <% topic_post_ids = num_2a.select{|x, y| x == post.reply_id} %>
+      <% if not topic_post_ids.empty?%>
+        <%reply_id = num_2a.select{|x, y| x == post.reply_id}.first[1] %>
+        <%= link_to ">>#{reply_id}", { anchor: reply_id } %>
+      <% else %>
+        <%= ">>[deleted post]" %>
+      <% end %>
+      <%= tag.br %>
+    <% end %>
+    <%= post.content %>
+  </div>
+  </div>
+<% end %>
+
+<div class="panel panel-info">
+<div class="panel-body">
+  <h3>書き込み</h3>
+  <%= form_for @newpost, :url => posts_path do |f| %>
+    <%= f.hidden_field :topic_id %>
+    <p>返信先  (<%= link_to "返信しない" , posts_reply_path(nil), :method => :post %>)</p>
+    <%= "返信せずに投稿" if @reply_to.nil? %>
+    <%= "#{num_2a.select{|x, y| x == @reply_to}.first[1]}番に返信" if not @reply_to.nil? %>
+    <%= f.hidden_field :reply_id, :value => @reply_to %>
+    <p>名前</p>
+    <p><%= f.text_field :name %></p>
+    <p>本文</p>
+    <p><%= f.text_area :content %></p>
+    <%= f.submit("投稿",class: 'btn btn-primary btn-sm') %>
+  <% end %>
+</div>
+</div>
+
+<br>
 <%= link_to 'Edit', edit_topic_path(@topic) %> |
 <%= link_to 'Back', topics_path %>
