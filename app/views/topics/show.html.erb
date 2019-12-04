@@ -17,7 +17,7 @@
     <span id=<%= index+1 %>><%= index+1 %>.</span>
     <%= post.name %>
     (<%= post.created_at %>)
-    <%= link_to "[↶]" , posts_reply_path(post.id, post), :method => :post %>
+    <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
     <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' }, class: "text-danger" %>  
     <br>
     <% if not post.reply_id.nil? %>
@@ -41,8 +41,17 @@
   <%= form_for @newpost, :url => posts_path do |f| %>
     <%= f.hidden_field :topic_id %>
     <p>返信先  (<%= link_to "返信しない" , posts_reply_path(nil), :method => :post %>)</p>
+    
+    <%if not @reply_to.nil? %>
+      <% topic_post_ids = num_2a.select{|x, y| x == @reply_to} %>
+      <% if topic_post_ids.empty?%>
+        <% @reply_to = nil %>
+      <% else %>
+        <%= "#{topic_post_ids.first[1]}番に返信" %>
+      <% end %>
+    <% end %>
     <%= "返信せずに投稿" if @reply_to.nil? %>
-    <%= "#{num_2a.select{|x, y| x == @reply_to}.first[1]}番に返信" if not @reply_to.nil? %>
+
     <%= f.hidden_field :reply_id, :value => @reply_to %>
     <p>名前</p>
     <p><%= f.text_field :name %></p>
