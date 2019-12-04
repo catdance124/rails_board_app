@@ -5,11 +5,16 @@ class TopicsController < ApplicationController
   # GET /topics.json
   def index
     @topics = Topic.all
+    session[:reply_to] = nil
   end
 
   # GET /topics/1
   # GET /topics/1.json
   def show
+    @topic = Topic.find(params[:id])
+    @posts = Post.where(topic_id: params[:id])
+    @newpost = Post.new(:topic_id => params[:id])
+    @reply_to = session[:reply_to]
   end
 
   # GET /topics/new
@@ -18,12 +23,9 @@ class TopicsController < ApplicationController
   end
 
   # GET /topics/1/edit
-  def show
-    @topic = Topic.find(params[:id])
-    @posts = Post.where(topic_id: params[:id])
-    @newpost = Post.new(:topic_id => params[:id])
+  def edit
   end
-
+  
   # POST /topics
   # POST /topics.json
   def create

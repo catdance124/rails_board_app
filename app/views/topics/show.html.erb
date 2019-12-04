@@ -6,24 +6,43 @@
 </p>
 
 <p>
+  <!-- 全postID <-> Topic内postID 変換用-->
+  <% num_2a = []  %>
   <% @posts.each_with_index do |post, index| %>
-  <%= link_to "[X]" , post, method: :delete, data: { confirm: 'Are you sure?' } %>  
-  <%= link_to "[↶]" , "" %>  
-  <%= index+1 %>.
-  <%= post.name %> | 
-  <%= post.content %> 
+  <% num_2a.push([post.id, index+1])%>
+  <!-- =====================ここで辞書逆引きする================================= -->
+  <% end %>
+  
+  <!-- 表示部分 -->
+  <% @posts.each_with_index do |post, index| %>
+  <%= index+1 %>. 
+  <%= post.name %>
+  <%= link_to "[X]" , post, method: :delete, data: { confirm: '削除しますか?' } %>  
+  <%= link_to "[↶]" , posts_reply_path(post.id), :method => :post %>
   <br>
+  <% if not post.reply_id.nil? and not (num_2a.select{|x, y| x == post.reply_id}).empty?%>
+    <%= ">>#{num_2a.select{|x, y| x == post.reply_id}.first[1]}" %>
+    <%= tag.br %>
+  <% elsif not post.reply_id.nil? %>
+    <%= ">>[deleted post]" %>
+    <%= tag.br %>
+  <% end %>
+  <%= post.content %>
+  <br><br>
   <% end %>
 </p>
 
-<h3>新規書き込み</h3>
+<h3>書き込み</h3>
 <%= form_for @newpost, :url => posts_path do |f| %>
   <%= f.hidden_field :topic_id %>
-  <p>お名前</p>
+  <p>返信先  (<%= link_to "返信しない" , posts_reply_path(nil), :method => :post %>)</p>
+  <%= "返信せずに投稿" if @reply_to.nil? %>
+  <%= "#{num_2a.select{|x, y| x == @reply_to}.first[1]}番に返信" if not @reply_to.nil? %>
+  <%= f.hidden_field :reply_id, :value => @reply_to %>
+  <p>名前</p>
   <p><%= f.text_field :name %></p>
   <p>本文</p>
   <p><%= f.text_area :content %></p>
-  <%= f.hidden_field :reply_id %>
   <%= f.submit %>
 <% end %>
 

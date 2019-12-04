@@ -5,6 +5,7 @@ class PostsController < ApplicationController
   # GET /posts.json
   def index
     @posts = Post.all
+    @reply_to = post.id
   end
 
   # GET /posts/1
@@ -20,11 +21,20 @@ class PostsController < ApplicationController
   # GET /posts/1/edit
   def edit
   end
-
+  
+  def reply
+    reply_id = params["format"]
+    if not reply_id.nil?
+      reply_id = reply_id.to_i
+    end
+    session[:reply_to] = reply_id    # actionをまたぐのでsessionに格納
+    redirect_back(fallback_location: root_path)
+  end
+  
   # POST /posts
   # POST /posts.json
   def create
-    @post = Post.new(params[:post].permit(:topic_id, :name, :content))
+    @post = Post.new(params[:post].permit(:topic_id, :name, :content, :reply_id))
 
     respond_to do |format|
       if @post.save
